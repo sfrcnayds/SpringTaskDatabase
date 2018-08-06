@@ -46,7 +46,6 @@ public class UsersController {
 	@RequestMapping(value="/doSearch",method = RequestMethod.GET)
 	public String search(@RequestParam("name")String name,Model model){
 		model.addAttribute("users", userService.getAllUserByName(name));
-		System.out.println(name);
 		return "search";
 	}
 	
