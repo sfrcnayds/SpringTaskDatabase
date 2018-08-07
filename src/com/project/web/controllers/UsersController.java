@@ -1,5 +1,7 @@
 package com.project.web.controllers;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,14 +27,7 @@ public class UsersController {
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public ModelAndView save(@ModelAttribute("user") User user) {
 		userService.createUser(user);
-		return new ModelAndView("redirect:/add");
-	}
-	@RequestMapping(value = "/ara", method = RequestMethod.POST)
-	public ModelAndView search(@ModelAttribute("search") Search search) {
-		ModelAndView model = new ModelAndView("search","command",new Search());
-		
-		
-		return model;
+		return new ModelAndView("redirect:/all");
 	}
 	@RequestMapping("/add")
 	public ModelAndView showAdd() {
@@ -44,24 +39,28 @@ public class UsersController {
 		return "search";
 	}
 	@RequestMapping(value="/doSearch",method = RequestMethod.GET)
-	public String search(@RequestParam("name")String name,Model model){
-		model.addAttribute("users", userService.getAllUserByName(name));
-		return "search";
+	public ModelAndView search(@RequestParam("name")String name){
+		ModelAndView model = showAllPage();
+		if(name != "") {
+			model.addObject("users", userService.getAllUserByName(name));
+		}
+		return model;
 	}
-	
-	
 	
 	@RequestMapping("/delete")
 	public String showDeletePage(Model model){
 		model.addAttribute("users",userService.getAllUser());
 		return "delete";
 	}
-	
+	@RequestMapping(value="/update",method = RequestMethod.POST)
+	public ModelAndView update(@ModelAttribute("user") User user) {
+		userService.updateUser(user);
+		return showAllPage();
+	}
 	@RequestMapping(value="/doDelete",method = RequestMethod.GET)
-	public String delete(@RequestParam("id") int id,Model model) {
+	public ModelAndView delete(@RequestParam("id") int id,Model model) {
 		userService.deleteUser(id);
-		model.addAttribute("users",userService.getAllUser());
-		return "delete";
+		return showAllPage();
 	}
 	
 	
@@ -72,5 +71,34 @@ public class UsersController {
 		modelAndView.setViewName("show");
 		return modelAndView;
 	}
+	
+	@RequestMapping("/all")
+	public ModelAndView showAllPage() {
+		ModelAndView modelAndView = new ModelAndView("add", "command", new User());
+		JSONArray array = new JSONArray();
+		for (User u : userService.getAllUser())
+		{
+		    JSONObject obj = new JSONObject();
+		    obj.put("id", u.getId());
+		    obj.put("name", u.getName());
+		    obj.put("surname", u.getSurname());
+		    obj.put("age", u.getAge());
+		    obj.put("gender", u.getGender());
+		    obj.put("address", u.getAddress());
+		    array.add(obj);
+		}
+		modelAndView.addObject("data", array.toJSONString());
+		modelAndView.addObject("users", userService.getAllUser());
+		modelAndView.setViewName("all");
+		return modelAndView;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 
 }

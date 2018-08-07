@@ -88,5 +88,15 @@ public class UserDAO {
 		params.addValue("id", id);
 		return jdbc.update("delete from User where idUser=:id", params);
 	}
+	public int update(User u) {
+		MapSqlParameterSource params = new MapSqlParameterSource();
+		params.addValue("id", u.getId());
+		params.addValue("name", u.getName());
+		params.addValue("surname", u.getSurname());
+		params.addValue("gender", u.getGender());
+		params.addValue("address", u.getAddress());
+		params.addValue("age", u.getAge());
+		return jdbc.update("update User set NAME=:name,SURNAME=:surname,AGE=:age,GENDER=:gender,ADDRESS=:address where idUser=:id", params);
+	}
 
 }
