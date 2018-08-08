@@ -17,9 +17,6 @@ public class UserDAO {
 	
 	private NamedParameterJdbcTemplate jdbc;
 
-	public UserDAO() {
-		System.out.println("Succesfuly loaded UserDAO");
-	}
 
 	 @Autowired
 	public void setDataSource(DataSource jdbc) {
